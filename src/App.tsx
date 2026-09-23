@@ -965,8 +965,8 @@ export default function App() {
             <p>
               Required before use. Their SDK reports usage metadata, not media.
               Models and runtimes download on demand; internet is required for
-              first use. Clear/Uhm inference is not yet verified in this build;
-              test on a short clip first.
+              first use. Clear/Uhm passed a short runtime smoke test; review
+              audio quality and filler suggestions before exporting.
             </p>
           </div>
           <div className="device-note">

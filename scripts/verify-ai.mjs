@@ -105,7 +105,7 @@ try {
     );
     if (empty.vectors.length) throw Error("empty result contract");
     checks.push(
-      "Actual classic Blob bootstrap imports production worker and completes empty embedding job",
+      "Actual same-origin classic bootstrap imports production worker and completes empty embedding job",
     );
     const abort = new AbortController();
     const cancelled = window.runAI(

@@ -75,7 +75,9 @@ describe("AI main-thread lifecycle (mock transport, not model inference)", () =>
     worker.onmessage?.({ data: { type: "result", result: { vectors: [] } } });
     await expect(promise).resolves.toEqual({ vectors: [] });
     expect(worker.terminate).toHaveBeenCalledOnce();
-    expect(revokeObjectURL).toHaveBeenCalledWith("blob:test");
+    expect(worker.url).toBe("http://localhost/ai/litert/tinycut-bootstrap.js");
+    expect(job.moduleUrl).toBe("http://localhost/assets/ai.worker.js");
+    expect(createObjectURL).not.toHaveBeenCalled();
     expect(samples.byteLength).toBe(12);
   });
   it("active cancellation terminates the worker and ignores late output", async () => {
@@ -93,7 +95,7 @@ describe("AI main-thread lifecycle (mock transport, not model inference)", () =>
     worker.onmessage?.({ data: { type: "result", result: { vectors: [] } } });
     await expect(promise).rejects.toMatchObject({ name: "AbortError" });
     expect(worker.terminate).toHaveBeenCalledOnce();
-    expect(revokeObjectURL).toHaveBeenCalledOnce();
+    expect(revokeObjectURL).not.toHaveBeenCalled();
   });
   it("propagates worker errors without success substitution", async () => {
     const promise = runAI("embed", input(), 16000, {}, vi.fn());
@@ -104,7 +106,7 @@ describe("AI main-thread lifecycle (mock transport, not model inference)", () =>
     await expect(promise).rejects.toThrow("embed: model HTTP 403");
     expect(worker.terminate).toHaveBeenCalledOnce();
   });
-  it("handles worker construction failure and revokes bootstrap URL", async () => {
+  it("handles worker construction failure without leaking object URLs", async () => {
     vi.stubGlobal(
       "Worker",
       class {
@@ -116,7 +118,7 @@ describe("AI main-thread lifecycle (mock transport, not model inference)", () =>
     await expect(runAI("embed", input(), 16000, {}, vi.fn())).rejects.toThrow(
       "CSP blocked worker",
     );
-    expect(revokeObjectURL).toHaveBeenCalledOnce();
+    expect(revokeObjectURL).not.toHaveBeenCalled();
   });
 });
 

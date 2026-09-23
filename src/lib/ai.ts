@@ -54,21 +54,15 @@ export function runAI<T extends AITask>(
     );
   }
   return new Promise((resolve, reject) => {
-    // LiteRT 2.5.x uses importScripts, which module workers forbid. A classic
-    // bootstrap can import our Vite ES module while retaining a classic realm.
+    // Classic workers permit LiteRT importScripts. Serve the bootstrap beside
+    // its WASM files because Emscripten uses the worker URL as its relative base.
     const moduleUrl = new URL(workerUrl, document.baseURI).href;
-    const bootstrap = new Blob(
-      [
-        `self.onmessage=async(e)=>{self.onmessage=null;try{await import(${JSON.stringify(moduleUrl)});if(typeof self.onmessage!=='function')throw new Error('AI worker did not initialize');self.onmessage(e)}catch(error){self.postMessage({type:'error',message:String(error?.message||error)})}};`,
-      ],
-      { type: "text/javascript" },
-    );
-    const url = URL.createObjectURL(bootstrap);
+    const baseUrl = new URL(import.meta.env.BASE_URL, document.baseURI).href;
+    const url = new URL("ai/litert/tinycut-bootstrap.js", baseUrl).href;
     let worker: Worker;
     let settled = false;
     const cleanup = () => {
       worker?.terminate();
-      URL.revokeObjectURL(url);
       signal?.removeEventListener("abort", abort);
     };
     const fail = (error: Error) => {
@@ -124,7 +118,8 @@ export function runAI<T extends AITask>(
           sampleRate,
           options,
           desertAntConsent,
-          baseUrl: new URL(import.meta.env.BASE_URL, document.baseURI).href,
+          baseUrl,
+          moduleUrl,
         },
         [copy.buffer],
       );

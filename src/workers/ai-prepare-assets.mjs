@@ -77,5 +77,9 @@ await copyRuntime(
   join(litert.directory, "wasm"),
   join(project, "public/ai/litert"),
 );
+await copyFile(
+  join(project, "src/workers/ai-bootstrap.js"),
+  join(project, "public/ai/litert/tinycut-bootstrap.js"),
+);
 // Clear's dist/index.js uses new URL('ClearWeb.wasm', import.meta.url): Vite
 // emits this SDK WASM itself. Do not copy/modify the SDK or its telemetry.

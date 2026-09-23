@@ -16,10 +16,29 @@ This document distinguishes executed behavior from integrations that are only im
 - Worker cancellation, consent rejection at both API/worker boundaries, and separate private ORT runtime assets.
 - `npm audit`: **0 known vulnerabilities** at verification time. Vite/Vitest were updated; Node-only sharp was overridden to a patched version. An audit is not a security guarantee.
 
+## Clear/Uhm runtime follow-up
+
+After the project owner explicitly accepted the Desert Ant license, a production-worker smoke processed the first three seconds of public JFK speech:
+
+- Clear produced 144,000 finite samples at 48 kHz (exactly three seconds). Input RMS was approximately 0.1804 and mastered output RMS 0.0913. This establishes valid nonempty audio and matching timing, not an objective improvement in quality.
+- Uhm executed its real ONNX graph and returned an empty filler list on that segment. No fillers were inserted or simulated. Positive filler recall is not established by this fixture.
+- Observed one 211-byte POST to `https://platform.desertant.ai/api/v1/ingest`, with top-level fields `app`, `events`, `platform`, `sdk`, and `sentAt`. No media upload request was observed. No failed HTTP requests occurred.
+- The runtime emitted expected GPU/NPU-unavailable diagnostics, then completed using CPU WASM.
+- Fixed Clear startup: LiteRT resolves its relative WASM against the classic worker URL. A Blob worker caused an invalid relative URL. The classic bootstrap is now served beside the LiteRT assets; no SDK code, licensing behavior or telemetry was modified.
+
+Reproduce only after human acceptance of the linked license:
+
+```sh
+npm run prepare:assets
+node scripts/verify-desert-ant.mjs --accept-license
+```
+
+The explicit flag is never enabled by CI. Each app session still starts with its consent checkbox unchecked.
+
 ## Not yet verified
 
-- **Clear and Uhm actual inference/quality/performance.** No agent or automated test accepted their license, downloaded their weights, or ran them. Their real browser adapters, tensor contracts, preprocessing, bundled SDK assets and consent gates are implemented. Initialization errors are surfaced; no output is simulated. Human license acknowledgment and a short real recording are the next acceptance step.
-- Clear SDK live reporting behavior during actual inference. The SDK is unmodified and usage reporting is disclosed, not bypassed.
+- **Clear enhancement quality and Uhm precision/recall on representative recordings.** The runtime smoke below confirms real inference and output shape, not quality or reliable positive filler detection. Broader labeled recordings and listening tests are still needed.
+- SDK reporting across long sessions, other devices, offline operation and cancellation. The short successful inference showed one usage event; this is not a comprehensive telemetry audit.
 - Portuguese transcription quality and Portuguese filler recall; the app supports selecting Portuguese, but the recorded speech acceptance test is English.
 - Very long, 4K or high-bitrate projects, low-memory devices, mobile browsers, Safari and Firefox. The 200 MB / 20-minute guard is not a measured capacity claim.
 - Frame-accurate browser preview of edits. Export applies source intervals through FFmpeg; in-browser skipping is an approximate editorial preview.
