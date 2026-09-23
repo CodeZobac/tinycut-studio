@@ -1,0 +1,14 @@
+node_modules/
+dist/
+public/ai/
+public/ffmpeg/
+test-results/
+playwright-report/
+.env*
+*.log
+*.tsbuildinfo
+.DS_Store
+.fixtures/
+ai-smoke-report.json
+editor-ai-report.json
+editor-verified.png
