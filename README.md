@@ -2,7 +2,7 @@
 
 A local-first browser video editor built around **small specialist brains**, not a cloud editing backend. Import footage, transcribe speech, find highlights and scene changes, review filler cuts, clean up the voice track, and export a new MP4. Your original stays untouched.
 
-**Status: initial working implementation, not a production-certified release.** Real transcription, embeddings, media export, and editor flows have been tested. Desert Ant Clear and Uhm are implemented but their actual model inference has **not** been exercised in this build: a human must first review and accept the Desert Ant license in the app. Do not treat static integration tests as model-quality verification.
+**Status: initial working implementation, not a production-certified release.** Transcription, embeddings, media export, and editor flows have been tested. After explicit human license acceptance, Clear and Uhm also passed real browser inference on a three-second English speech fixture. This is a runtime smoke test, not a quality benchmark or measured filler-removal accuracy. Every user must still review the Desert Ant license before using those models.
 
 ## Run locally
 
@@ -95,7 +95,7 @@ node scripts/verify-ai.mjs --models
 
 The smoke uses a public JFK speech fixture unless `--fixture=/absolute/path/speech.wav` is supplied. It verifies actual word timing and 384-dimensional normalized embeddings. `node scripts/verify-ai.mjs` without the flag exercises the worker/consent/runtime paths without loading models.
 
-See [VERIFICATION.md](VERIFICATION.md) for evidence and deliberate gaps. CI runs unit tests, the production build, and synthetic browser edit/export tests. Clear/Uhm inference is **not** claimed by CI and no license is accepted by automation.
+See [VERIFICATION.md](VERIFICATION.md) for evidence and deliberate gaps. The prepared CI workflow is not yet installed on GitHub because workflow writes are blocked by the connection. Clear/Uhm smoke is deliberately opt-in: only after accepting the provider's terms, run `npm run prepare:assets` followed by `node scripts/verify-desert-ant.mjs --accept-license`. CI never accepts model licensing on a user's behalf.
 
 ## Known limits
 
